@@ -5,5 +5,5 @@ This will aim to provide tools to the town hall of Paris so that it can judge th
 The project has been led from May to July, 2024.<br>
 <br>
 Resources :<br>
-Original dataset : https://drive.google.com/uc?id=16X-nAdWsnEx6wdN3FganumM98H5y_jP2 <br>
+Original dataset : https://opendata.paris.fr/explore/dataset/comptage-velo-donnees-compteurs/download/?format=csv&timezone=Europe/Paris&lang=fr&use_labels_for_header=true&csv_separator=;) <br>
 Machine learning model : [https://drive.google.com/uc?id=16LnLIWL26NwK9e1slSzs6FGXwIkjinwr](https://drive.google.com/uc?id=17-TIEds35Al6JQLzebASTEUmrYEVgHl4)
