@@ -44,7 +44,7 @@ def load_rf_model():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     model_path = os.path.join(script_dir, 'rf_model.pkl')
     if not os.path.exists(model_path):
-        url = 'https://drive.google.com/uc?id=16LnLIWL26NwK9e1slSzs6FGXwIkjinwr'  
+        url = 'https://drive.google.com/uc?id=16LnLIWL26NwK9e1slSzs6FGXwIkjinwr'  # Lien de téléchargement direct
         download_file_from_google_drive(url, model_path)
     try:
         with open(model_path, 'rb') as best_rfmodel:
@@ -53,6 +53,9 @@ def load_rf_model():
     except FileNotFoundError as e:
         st.error(f"Error loading model: {e}")
         return None
+    except Exception as e:
+        st.error(f"Unexpected error loading model: {e}")
+        return None
 
 rf_model = load_rf_model()
 
@@ -60,10 +63,17 @@ rf_model = load_rf_model()
 def load_data():
     data_path = 'df_original.csv'
     if not os.path.exists(data_path):
-        url = 'https://drive.google.com/uc?id=16X-nAdWsnEx6wdN3FganumM98H5y_jP2'  
+        url = 'https://drive.google.com/uc?id=16X-nAdWsnEx6wdN3FganumM98H5y_jP2'  # Lien de téléchargement direct
         download_file_from_google_drive(url, data_path)
-    df = pd.read_csv(data_path, sep=';')
-    return df
+    try:
+        df = pd.read_csv(data_path, sep=';')
+        return df
+    except FileNotFoundError as e:
+        st.error(f"Error loading data: {e}")
+        return None
+    except Exception as e:
+        st.error(f"Unexpected error loading data: {e}")
+        return None
 
 # Loading the preprocessed dataset in the cache
 @st.cache_data
