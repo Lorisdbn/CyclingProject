@@ -1,12 +1,12 @@
-pandas==2.2.2
-numpy==1.23.5
-scipy==1.10.1
-seaborn==0.12.2
-matplotlib==3.7.1
-plotly==5.14.1
-statsmodels==0.14.0
-scikit-learn==1.2.2
-streamlit==1.23.1
-gdown==4.7.1
-requests==2.32.3
-joblib
+pandas==2.2.3  # Dernière version stable
+numpy==1.24.4  # Dernière version stable
+scipy==1.11.3  # Dernière version stable
+seaborn==0.12.3  # Dernière version stable
+matplotlib==3.8.0  # Dernière version stable
+plotly==5.15.0  # Dernière version stable
+statsmodels==0.14.0  # Déjà à jour
+scikit-learn==1.3.0  # Dernière version stable
+streamlit==1.25.0  # Dernière version stable
+gdown==4.7.2  # Dernière version stable
+requests==2.31.0  # Dernière version stable
+joblib==1.3.2  # Dernière version stable
