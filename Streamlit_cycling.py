@@ -40,8 +40,7 @@ def download_file_from_google_drive(url, output):
 
 # Loading the random forest model
 @st.cache_resource
-def load_rf
-_model():
+def load_rf_model():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     model_path = os.path.join(script_dir, 'rf_model.pkl')
     if not os.path.exists(model_path):
