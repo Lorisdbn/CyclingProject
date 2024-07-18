@@ -24,6 +24,9 @@ import os
 import io
 import gdown
 import warnings
+import joblib
+import requests
+
 
 # Masquer les avertissements
 warnings.filterwarnings("ignore")
@@ -45,20 +48,23 @@ def download_file_from_google_drive(url, output):
 # Loading the random forest model
 @st.cache_resource
 def load_rf_model():
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    model_path = os.path.join(script_dir, 'rf_model.pkl')
+    model_path = '/tmp/rf_model.joblib'
     if not os.path.exists(model_path):
-        url = 'https://drive.google.com/uc?id=16LnLIWL26NwK9e1slSzs6FGXwIkjinwr'  # Lien de téléchargement direct
-        download_file_from_google_drive(url, model_path)
+        url = 'https://drive.google.com/uc?id=16qtrae6_wOXHh48xsHL3-RR5bImfXfKi'
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+            with open(model_path, 'wb') as f:
+                f.write(response.content)
+        except Exception as e:
+            st.error(f"Error downloading model: {e}")
+            return None
+    
     try:
-        with open(model_path, 'rb') as best_rfmodel:
-            rf_model = pickle.load(best_rfmodel)
+        rf_model = joblib.load(model_path)
         return rf_model
-    except FileNotFoundError as e:
-        st.error(f"Error loading model: {e}")
-        return None
     except Exception as e:
-        st.error(f"Unexpected error loading model: {e}")
+        st.error(f"Error loading model: {e}")
         return None
 
 rf_model = load_rf_model()
