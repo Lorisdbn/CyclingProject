@@ -1,11 +1,9 @@
-
 import pandas as pd
 import numpy as np
 import scipy.stats
 import seaborn as sns
 import matplotlib.pyplot as plt
 import plotly.express as px
-import scipy.stats
 from scipy.stats import spearmanr
 import statsmodels.formula.api as smf
 import statsmodels.api as sm
@@ -18,18 +16,22 @@ from sklearn.metrics import f1_score, mean_absolute_error, mean_squared_error, r
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 import plotly.graph_objects as go
-import pickle
+import joblib
 import streamlit as st
 import os
 import io
 import gdown
 import warnings
-import joblib
-import requests
-
 
 # Masquer les avertissements
 warnings.filterwarnings("ignore")
+
+# Fonction pour télécharger un fichier depuis Google Drive
+def download_file_from_google_drive(url, output):
+    try:
+        gdown.download(url, output, quiet=False)
+    except Exception as e:
+        st.error(f"Error downloading file from Google Drive: {e}")
 
 st.set_page_config(
     page_title="Cycling traffic in Paris",
@@ -38,45 +40,36 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# Fonction pour télécharger un fichier depuis Google Drive
-def download_file_from_google_drive(url, output):
-    try:
-        gdown.download(url, output, quiet=False, fuzzy=True)
-    except Exception as e:
-        st.error(f"Error downloading file from Google Drive: {e}")
-
 # Loading the random forest model
 @st.cache_resource
 def load_rf_model():
-    model_path = '/tmp/rf_model.joblib'
+    script_dir = os.getcwd()  # Utilisation de os.getcwd() pour obtenir le répertoire courant
+    model_path = os.path.join(script_dir, 'rf_model.joblib')
     if not os.path.exists(model_path):
-        url = 'https://drive.google.com/uc?id=16qtrae6_wOXHh48xsHL3-RR5bImfXfKi'
-        try:
-            response = requests.get(url)
-            response.raise_for_status()
-            with open(model_path, 'wb') as f:
-                f.write(response.content)
-        except Exception as e:
-            st.error(f"Error downloading model: {e}")
-            return None
-    
+        url = 'https://drive.google.com/uc?id=17-TIEds35Al6JQLzebASTEUmrYEVgHl4'  # Lien de téléchargement direct
+        download_file_from_google_drive(url, model_path)
     try:
-        rf_model = joblib.load(model_path)
+        with open(model_path, 'rb') as best_rfmodel:
+            rf_model = joblib.load(best_rfmodel)
         return rf_model
-    except Exception as e:
+    except FileNotFoundError as e:
         st.error(f"Error loading model: {e}")
+        return None
+    except Exception as e:
+        st.error(f"Unexpected error loading model: {e}")
         return None
 
 rf_model = load_rf_model()
 
+# Loading the original dataframe in the cache
 @st.cache_data
 def load_data():
-    data_path = 'df_reduit.parquet'
+    data_path = 'df_original.csv'
     if not os.path.exists(data_path):
-        url = 'https://drive.google.com/uc?id=16aI1MeWcnuubA5M9KUj6KpB83pX8wJ01'  # Lien de téléchargement direct
+        url = 'https://drive.google.com/uc?id=16X-nAdWsnEx6wdN3FganumM98H5y_jP2'  # Lien de téléchargement direct
         download_file_from_google_drive(url, data_path)
     try:
-        df = pd.read_parquet(data_path)
+        df = pd.read_csv(data_path, sep=';')
         return df
     except FileNotFoundError as e:
         st.error(f"Error loading data: {e}")
