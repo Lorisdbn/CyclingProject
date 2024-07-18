@@ -24,8 +24,6 @@ import os
 import io
 import gdown
 import warnings
-import requests
-
 
 # Masquer les avertissements
 warnings.filterwarnings("ignore")
@@ -37,29 +35,12 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# Fonction pour télécharger un fichier depuis Google Drive en utilisant requests
-def download_file_from_google_drive(file_id, destination):
-    def get_confirm_token(response):
-        for key, value in response.cookies.items():
-            if key.startswith('download_warning'):
-                return value
-        return None
-    
-    def save_response_content(response, destination):
-        CHUNK_SIZE = 32768
-        with open(destination, "wb") as f:
-            for chunk in response.iter_content(CHUNK_SIZE):
-                if chunk:  # filter out keep-alive new chunks
-                    f.write(chunk)
-
-    URL = "https://docs.google.com/uc?export=download"
-    session = requests.Session()
-    response = session.get(URL, params={'id': file_id}, stream=True)
-    token = get_confirm_token(response)
-    if token:
-        params = {'id': file_id, 'confirm': token}
-        response = session.get(URL, params=params, stream=True)
-    save_response_content(response, destination)
+# Fonction pour télécharger un fichier depuis Google Drive
+def download_file_from_google_drive(url, output):
+    try:
+        gdown.download(url, output, quiet=False, fuzzy=True)
+    except Exception as e:
+        st.error(f"Error downloading file from Google Drive: {e}")
 
 # Loading the random forest model
 @st.cache_resource
@@ -67,18 +48,15 @@ def load_rf_model():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     model_path = os.path.join(script_dir, 'rf_model.pkl')
     if not os.path.exists(model_path):
-        file_id = '16LnLIWL26NwK9e1slSzs6FGXwIkjinwr'  # ID de fichier
-        download_file_from_google_drive(file_id, model_path)
-    
-    # Vérification de la taille du fichier pour s'assurer qu'il est bien téléchargé
-    if os.path.getsize(model_path) < 100:  # Supposons que le fichier doit être plus grand que 100 octets
-        st.error(f"Downloaded file {model_path} seems too small, please check the file ID or URL.")
-        return None
-    
+        url = 'https://drive.google.com/uc?id=16LnLIWL26NwK9e1slSzs6FGXwIkjinwr'  # Lien de téléchargement direct
+        download_file_from_google_drive(url, model_path)
     try:
         with open(model_path, 'rb') as best_rfmodel:
             rf_model = pickle.load(best_rfmodel)
         return rf_model
+    except FileNotFoundError as e:
+        st.error(f"Error loading model: {e}")
+        return None
     except Exception as e:
         st.error(f"Unexpected error loading model: {e}")
         return None
@@ -89,14 +67,8 @@ rf_model = load_rf_model()
 def load_data():
     data_path = 'df_original.csv'
     if not os.path.exists(data_path):
-        file_id = '16X-nAdWsnEx6wdN3FganumM98H5y_jP2'  # ID de fichier
-        download_file_from_google_drive(file_id, data_path)
-    
-    # Vérification de la taille du fichier pour s'assurer qu'il est bien téléchargé
-    if os.path.getsize(data_path) < 100:  # Supposons que le fichier doit être plus grand que 100 octets
-        st.error(f"Downloaded file {data_path} seems too small, please check the file ID or URL.")
-        return None
-    
+        url = 'https://drive.google.com/uc?id=16X-nAdWsnEx6wdN3FganumM98H5y_jP2'  # Lien de téléchargement direct
+        download_file_from_google_drive(url, data_path)
     try:
         df = pd.read_csv(data_path, sep=';')
         return df
