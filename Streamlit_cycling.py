@@ -22,6 +22,11 @@ import pickle
 import streamlit as st
 import os
 import io
+import gdown
+import warnings
+
+# Masquer les avertissements
+warnings.filterwarnings("ignore")
 
 st.set_page_config(
     page_title="Cycling traffic in Paris",
@@ -30,11 +35,18 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
+def download_file_from_google_drive(url, output):
+    gdown.download(url, output, quiet=False)
+
 # Loading the random forest model
 @st.cache_resource
-def load_rf_model():
+def load_rf
+_model():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     model_path = os.path.join(script_dir, 'rf_model.pkl')
+    if not os.path.exists(model_path):
+        url = 'https://drive.google.com/uc?id=16LnLIWL26NwK9e1slSzs6FGXwIkjinwr'  
+        download_file_from_google_drive(url, model_path)
     try:
         with open(model_path, 'rb') as best_rfmodel:
             rf_model = pickle.load(best_rfmodel)
@@ -42,15 +54,16 @@ def load_rf_model():
     except FileNotFoundError as e:
         st.error(f"Error loading model: {e}")
         return None
-    
+
 rf_model = load_rf_model()
 
-# Loading the original dataframe in the cache
 @st.cache_data
 def load_data():
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    filepath = os.path.join(script_dir, 'df_original.csv')
-    df = pd.read_csv(filepath, sep=';')
+    data_path = 'df_original.csv'
+    if not os.path.exists(data_path):
+        url = 'https://drive.google.com/uc?id=16X-nAdWsnEx6wdN3FganumM98H5y_jP2'  
+        download_file_from_google_drive(url, data_path)
+    df = pd.read_csv(data_path, sep=';')
     return df
 
 # Loading the preprocessed dataset in the cache
@@ -317,17 +330,26 @@ if page == pages[2]:
         fig = px.box(df_en, y="Hourly_counting")
         fig.update_layout(width=600)
         fig.update_layout(plot_bgcolor= 'rgba(0, 0, 0, 0)',
-                        paper_bgcolor= 'rgba(0, 0, 0, 0)',title="Boxplot visualization of Hourly counting", yaxis_title = 'Hourly counting')                    
+                        paper_bgcolor= 'rgba(0, 0, 0, 0)',
+                        title="Boxplot visualization of Hourly counting",
+                        title_font=dict(color='black'), 
+                        yaxis_title = 'Hourly counting',
+                        yaxis=dict(
+                            title_font=dict(color='black'), 
+                            tickfont=dict(color='black')),
+                        xaxis=dict(title_font=dict(color='black'),  
+                            tickfont=dict(color='black')))
         st.plotly_chart(fig)
         st.markdown("""
                         ##### Main Takeaways
                         - The median number of hourly counting is 41
+                        - On this graph we see a high amount of outliers
                         - Since there are a lot of outliers it's difficult to interpret the boxplot and we would need to modify the data set.
                         """)
         
 #Figure 2
     # Using Boxplot to see the IQR, the mean and the outliers of the target variable
-
+   
     if st.button("Target variable distribution after data preprocesing") :
         with st.expander("Box plot of hourly counting per month (April-Dec 2023)"):
             # Histogram of total hourly counting per month (2023)
@@ -337,17 +359,23 @@ if page == pages[2]:
                         paper_bgcolor= 'rgba(0, 0, 0, 0)',
                           yaxis_title = 'Hourly counting',
                           xaxis_title= 'Months',
-                              xaxis=dict(
-                                 tickmode='array',
-                                 tickvals=[1,2,3,4,5,6,7,8,9,10,11,12],
-                                 ticktext=['Jan', 'Feb','Mar', 'Apr','May','Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']))
+                            xaxis=dict(
+                                tickmode='array',
+                                tickvals=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+                                ticktext=['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                                title_font=dict(color='black'),  
+                                tickfont=dict(color='black')  
+                            ),
+                            yaxis=dict(
+                                title_font=dict(color='black'), 
+                                tickfont=dict(color='black')  
+                            ),)
             st.plotly_chart(fig2)
             st.markdown("""
                         ##### Main Takeaways
-                        - Every month from April to December we have between 80000 and 400000 bicycle counts
-                        - We have a lot of outlieres that might indicates that there are some traffic points where we have much more counts than expected.
+                        - Every month from April to December we have mostly between 80000 and 400000 bicycle counts
+                        - We have still a lot of outliers that might indicate that there are some traffic points where we have much more counts than expected.
                         """)
-
     
 #Figure 3
         with st.expander("Total number of hourly counts per month"):
@@ -366,7 +394,8 @@ if page == pages[2]:
              st.markdown("""
                         ##### Main Takeaways
                         - Hourly count per Month in 2023 to see on which months we have the most counts
-                        - We can see here that the most counts are in June and September.
+                        - We can see here that the most counts are in June and September
+                        - Least counts are in Aug, probably due to vacation period
                         """)
 #Figure4
         with st.expander("Line plot of hourly counting per hour (2023)"):
@@ -383,11 +412,20 @@ if page == pages[2]:
                               xaxis=dict(
                                   tickmode='array',
                                   tickvals=[0, 6, 7, 12, 16, 17, 18, 24],
-                                  ticktext=['Midnight', '6','7', 'Noon','4','5', '6', 'Midnight']))
+                                  ticktext=['Midnight', '6','7', 'Noon','4','5', '6', 'Midnight'],
+                                  title_font=dict(color='black'),  
+                                  tickfont=dict(color='black')  
+                              ),
+                              yaxis=dict(
+                                  title_font=dict(color='black'), 
+                                  tickfont=dict(color='black')  
+                              ),)
             st.plotly_chart(fig4)
             st.markdown("""
                         ##### Main Takeaways
-                        - On this graph we can see that the hourly count per hour is different regarding the month, but the trend is the same. We have the same peaks and same lows.
+                        - On this graph we can see that the hourly count per hour is different regarding the month 
+                        - We can see that the trend is the same, since we can observe the same peaks and same lows
+                        - There is a slight change then comparing June and December
                         """)
 
 
@@ -404,11 +442,18 @@ if page == pages[2]:
             fig5.update_layout(plot_bgcolor= 'rgba(0, 0, 0, 0)',
                         paper_bgcolor= 'rgba(0, 0, 0, 0)',
                                xaxis_title= 'Day of the week',
-                               yaxis_title = 'Hourly counting')
+                               yaxis_title = 'Hourly counting',      
+                               yaxis=dict(
+                                   title_font=dict(color='black'), 
+                                   tickfont=dict(color='black')),
+                               xaxis=dict(
+                                   title_font=dict(color='black'), 
+                                   tickfont=dict(color='black')))
             st.plotly_chart(fig5)
             st.markdown("""
                         ##### Main Takeaways
-                        - When we show the hourly couning per day, we can see that there is more trafic during the weekdays.
+                        - When we show the hourly couning per day, we can see that there is more trafic during the weekdays
+                        - Also, on the weekdays seem to be more outliers
                         """)
 
                      
@@ -418,35 +463,54 @@ if page == pages[2]:
         with st.expander("Hourly counting bar plot per weekday and weekend (2023)"):
             fig6a= px.bar(weekdays, x='counting_hour', y='Hourly_counting', color='counting_day_name', barmode='group',
                           labels={'counting_day_name': 'Weekday'})
-            fig6a.update_layout(title="Hourly counting on weekdays",
-                            plot_bgcolor= 'rgba(0, 0, 0, 0)',
-                            paper_bgcolor= 'rgba(0, 0, 0, 0)',
-                           xaxis_title= 'Weekday',
-                           yaxis_title = 'Hourly counting',
-                           yaxis=dict(range=[y_min, y_max]),
-                              xaxis=dict(
-                                  tickmode='array',
-                                  tickvals=[0, 6, 7, 12, 16, 17, 18, 24],
-                                  ticktext=['Midnight', '6','7', 'Noon','4','5', '6', 'Midnight']))
+            fig6a.update_layout(
+                title="Hourly counting on weekdays",
+                plot_bgcolor='rgba(0, 0, 0, 0)',
+                paper_bgcolor='rgba(0, 0, 0, 0)',
+                xaxis_title='Weekday',
+                yaxis_title='Hourly counting',
+                yaxis=dict(
+                    range=[y_min, y_max],
+                    title_font=dict(color='black'),
+                    tickfont=dict(color='black')),
+                xaxis=dict(
+                    tickmode='array',
+                    tickvals=[0, 6, 7, 12, 16, 17, 18, 24],
+                    ticktext=['Midnight', '6','7', 'Noon','4','5', '6', 'Midnight'], 
+                    title_font=dict(color='black'), 
+                    tickfont=dict(color='black')),
+                title_font=dict(color='black') )
             st.plotly_chart(fig6a)
-            st.write( "###### We can observe a peak in hourly counting during rush hours (in the morning from 6 to 7 and during the afternoon from 15 to 18). We can guess that a lot of workers / students are using bicycles on a daily basis during working hours.")
+            st.markdown("""
+                        ##### Main Takeaways
+                        - We can observe a peak in hourly counting during rush hours (in the morning from 6 to 7 and during the afternoon from 16 to 17) 
+                        - We can conclude that a lot of workers / students are using bicycles on a daily basis during working hours
+                        """)
+            
+    
             # Boxplot for the weekends
             fig6b= px.bar(weekends, x='counting_hour', y='Hourly_counting', color='counting_day_name', barmode='group',
                           labels={'counting_day_name': 'Weekend'})
             fig6b.update_layout(title="Hourly counting on weekend",
-                                plot_bgcolor= 'rgba(0, 0, 0, 0)',
-                                paper_bgcolor= 'rgba(0, 0, 0, 0)',
-                                xaxis_title= 'Weekend Day',
-                                yaxis_title = 'Hourly counting',
-                                yaxis=dict(range=[y_min, y_max]),
-                                xaxis=dict(
-                                    tickmode='array',
-                                    tickvals=[0, 6, 7, 12, 16, 17, 18, 24],
-                                    ticktext=['Midnight', '6','7', 'Noon','4','5', '6', 'Midnight']))
+                    plot_bgcolor='rgba(0, 0, 0, 0)',
+                    paper_bgcolor='rgba(0, 0, 0, 0)',
+                    xaxis_title='Weekday',
+                    yaxis_title='Hourly counting',
+                    yaxis=dict(
+                        range=[y_min, y_max],
+                        title_font=dict(color='black'),
+                        tickfont=dict(color='black')),
+                    xaxis=dict(
+                        tickmode='array',
+                        tickvals=[0, 6, 7, 12, 16, 17, 18, 24],
+                        ticktext=['Midnight', '6','7', 'Noon','4','5', '6', 'Midnight'], 
+                        title_font=dict(color='black'), 
+                        tickfont=dict(color='black')),
+                    title_font=dict(color='black') )
             st.plotly_chart(fig6b)
             st.markdown("""
                         ##### Main Takeaways
-                        - On a weekend the rusch hours change. 
+                        - On a weekend the rush hours change, shifting to the afternoon 
                         - We don't have the same peaks and the curve is more flat.
                         """)
 
@@ -464,15 +528,18 @@ if page == pages[2]:
                             y=pivot_table.index,
                             colorscale='RdYlBu_r'
                         ))
-                  fig7.update_layout(
-                                        plot_bgcolor= 'rgba(0, 0, 0, 0)',
-                                        paper_bgcolor= 'rgba(0, 0, 0, 0)',
-                                        xaxis_title= 'Day',
-                                        yaxis_title = 'Hour of the day',
-                                        yaxis=dict(
+                  fig7.update_layout(plot_bgcolor= 'rgba(0, 0, 0, 0)',
+                                     paper_bgcolor= 'rgba(0, 0, 0, 0)',
+                                     xaxis_title= 'Day',
+                                     yaxis_title = 'Hour of the day',
+                                     yaxis=dict(
                                             tickmode='array',
                                             tickvals=[0, 6, 7, 12, 16, 17, 18, 24],
-                                            ticktext=['Midnight', '6','7', 'Noon','4','5', '6', 'Midnight']))
+                                            ticktext=['Midnight', '6','7', 'Noon','4','5', '6', 'Midnight'],
+                                            title_font=dict(color='black'), 
+                                            tickfont=dict(color='black')),
+                                    xaxis=dict(title_font=dict(color='black'), 
+                                          tickfont=dict(color='black'),))
                   st.plotly_chart(fig7)
                   st.markdown("""
                                     ##### Main Takeaways
@@ -517,32 +584,36 @@ if page == pages[2]:
         # Create labels and values for the Pie chart
         labels = ['Top 10', 'Lowest 10', 'Others']
         values = [top10_percentages, lowest10_percentages, others_percentage]
-        with st.expander("Share of top-10 & flop-10 counters among the hourly counting total"):
+        with st.expander("Share of Top 10 & Flop 10 counters among the hourly counting total"):
                 # Create a Pie chart
                 fig8 = go.Figure(data=[go.Pie(labels=labels, values=values)])
                 
                 # Update layout with title and legend
                 fig8.update_layout(
-                    plot_bgcolor= 'rgba(0, 0, 0, 0)',
-                    paper_bgcolor= 'rgba(0, 0, 0, 0)',
+                    plot_bgcolor='rgba(0, 0, 0, 0)',
+                    paper_bgcolor='rgba(0, 0, 0, 0)',
                     showlegend=True,
-                    legend=dict(orientation="h", yanchor="bottom",y=1.02,xanchor="right",x=1))
-                
-                # Plotting in Streamlit
+                    legend=dict(orientation="v",yanchor="top",
+                        y=0.9, xanchor="right", x=0.9, bgcolor='white',font=dict(color='black')))
                 st.plotly_chart(fig8)
-                st.write( "We can observe that the top 10 counters make out the quarter of all counters.")
+
+
                 unique_counts = df_2023.drop_duplicates(subset=['Counter_ID'])['Counter_ID'].value_counts()
             
                 unique_counts = df_2023['Counter_ID'].drop_duplicates().count()
                 
                 # Display the sum of unique counts
-                st.write(f"In Paris we have  {unique_counts} unique counters.")
+                st.markdown(f"""
+                    ##### Main Takeaways
+                    - We can observe that the top 10 counters make up to a quarter of all counters
+                    - In Paris, we have {unique_counts} unique counters
+                """)
 
 
 #Figure9
 
         # Keeping only the necessary data
-        df_map = df_en[['Counter_site_name', 'Hourly_counting', 'Latitude', 'Longitude']]
+        df_map = df_2023[['Counter_site_name', 'Hourly_counting', 'Latitude', 'Longitude']]
         
         # Calculate the sum of hourly_counting for each counter
         counter_sum = df_map.groupby('Counter_site_name')['Hourly_counting'].sum().reset_index()
@@ -556,7 +627,7 @@ if page == pages[2]:
         with st.expander("Flop 10 Counters (in hourly counting total)"):
                 flop_10_counters_en = counter_sum.nsmallest(10, 'Hourly_counting')
                 st.dataframe(flop_10_counters_en)
-        
+                
         # Fusionner avec le DataFrame principal pour obtenir les Latitude et Longitude
         top_10 = pd.merge(top_10_counters_en, df_map[['Counter_site_name', 'Latitude', 'Longitude']].drop_duplicates(), on='Counter_site_name')
         flop_10 = pd.merge(flop_10_counters_en, df_map[['Counter_site_name', 'Latitude', 'Longitude']].drop_duplicates(), on='Counter_site_name')
@@ -564,9 +635,9 @@ if page == pages[2]:
         # Combiner les top 10 et flop 10 dans un seul DataFrame
         df_top_flop = pd.concat([top_10, flop_10]).reset_index(drop=True)
         
-        with st.expander("Location of top/flop 10 counters in Paris")  :
+        with st.expander("Location of Top 10 and Flop 10 counters in Paris")  :
                 # Créer une figure initiale vide
-                fig9 = px.scatter_mapbox(lat=[], lon=[], zoom=10, height=600)
+                fig9 = px.scatter_mapbox(lat=[], lon=[], zoom=12, height=600)
                 
                 # Ajouter les points pour le top 10 en vert
                 fig9.add_trace(px.scatter_mapbox(top_10, lat='Latitude', lon='Longitude', hover_name='Counter_site_name', size =top_10['Hourly_counting'], 
