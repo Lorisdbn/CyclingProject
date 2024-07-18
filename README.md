@@ -7,4 +7,4 @@ The project has been led from May to July, 2024.<br>
 Before accessing the project's Streamlit app please download the following files :<br>
 Original dataset : https://drive.google.com/file/d/16X-nAdWsnEx6wdN3FganumM98H5y_jP2/view?usp=sharing<br>
 Processed dataset : https://drive.google.com/file/d/16PmUCUQEdU0OWhmXmSr18t5mAwM3pWK2/view?usp=sharing<br>
-Machine learning model :
+Machine learning model : https://drive.google.com/file/d/16LnLIWL26NwK9e1slSzs6FGXwIkjinwr/view?usp=sharing
