@@ -24,6 +24,8 @@ import os
 import io
 import gdown
 import warnings
+import request
+
 
 # Masquer les avertissements
 warnings.filterwarnings("ignore")
