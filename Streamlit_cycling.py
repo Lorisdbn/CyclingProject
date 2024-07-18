@@ -35,8 +35,12 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
+# Fonction pour télécharger un fichier depuis Google Drive
 def download_file_from_google_drive(url, output):
-    gdown.download(url, output, quiet=False)
+    try:
+        gdown.download(url, output, quiet=False, fuzzy=True)
+    except Exception as e:
+        st.error(f"Error downloading file from Google Drive: {e}")
 
 # Loading the random forest model
 @st.cache_resource
