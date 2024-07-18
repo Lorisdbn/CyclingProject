@@ -6,4 +6,4 @@ The project has been led from May to July, 2024.<br>
 <br>
 Resources :<br>
 Original dataset : https://drive.google.com/uc?id=16X-nAdWsnEx6wdN3FganumM98H5y_jP2 <br>
-Machine learning model : https://drive.google.com/uc?id=16LnLIWL26NwK9e1slSzs6FGXwIkjinwr
+Machine learning model : [https://drive.google.com/uc?id=16LnLIWL26NwK9e1slSzs6FGXwIkjinwr](https://drive.google.com/uc?id=17-TIEds35Al6JQLzebASTEUmrYEVgHl4)
