@@ -24,7 +24,7 @@ import os
 import io
 import gdown
 import warnings
-import request
+import requests
 
 
 # Masquer les avertissements
