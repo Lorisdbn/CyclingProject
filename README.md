@@ -4,7 +4,6 @@ The aim of this project is to carry out an analysis of the data collected by the
 This will aim to provide tools to the town hall of Paris so that it can judge the improvements to be made to the various cycling areas of the city.<br>
 The project has been led from May to July, 2024.<br>
 <br>
-Before accessing the project's Streamlit app please download the following files :<br>
-Original dataset : https://drive.google.com/file/d/16X-nAdWsnEx6wdN3FganumM98H5y_jP2/view?usp=sharing<br>
-Processed dataset : https://drive.google.com/file/d/16PmUCUQEdU0OWhmXmSr18t5mAwM3pWK2/view?usp=sharing<br>
-Machine learning model : https://drive.google.com/file/d/16LnLIWL26NwK9e1slSzs6FGXwIkjinwr/view?usp=sharing
+Resources :<br>
+Original dataset : https://drive.google.com/uc?id=16X-nAdWsnEx6wdN3FganumM98H5y_jP2 <br>
+Machine learning model : https://drive.google.com/uc?id=16LnLIWL26NwK9e1slSzs6FGXwIkjinwr
