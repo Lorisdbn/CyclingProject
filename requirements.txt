@@ -1,7 +1,6 @@
 matplotlib
 numpy
 pandas
-pickle
 plotly
 scipy
 seaborn
