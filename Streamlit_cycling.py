@@ -64,16 +64,10 @@ rf_model = load_rf_model()
 # Loading the original dataframe in the cache
 @st.cache_data
 def load_data():
-    data_path = 'df_original.csv'
-    if not os.path.exists(data_path):
-        url = 'https://drive.google.com/uc?id=16X-nAdWsnEx6wdN3FganumM98H5y_jP2'  # Lien de téléchargement direct
-        download_file_from_google_drive(url, data_path)
+    data_url = 'https://opendata.paris.fr/explore/dataset/comptage-velo-donnees-compteurs/download/?format=csv&timezone=Europe/Paris&lang=fr&use_labels_for_header=true&csv_separator=;'
     try:
-        df = pd.read_csv(data_path, sep=';')
+        df = pd.read_csv(data_url, sep=';')
         return df
-    except FileNotFoundError as e:
-        st.error(f"Error loading data: {e}")
-        return None
     except Exception as e:
         st.error(f"Unexpected error loading data: {e}")
         return None
