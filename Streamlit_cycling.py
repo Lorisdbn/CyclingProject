@@ -65,12 +65,12 @@ rf_model = load_rf_model()
 
 @st.cache_data
 def load_data():
-    data_path = 'df_original.csv'
+    data_path = 'df_reduit.parquet'
     if not os.path.exists(data_path):
-        url = 'https://drive.google.com/uc?id=16X-nAdWsnEx6wdN3FganumM98H5y_jP2'  # Lien de téléchargement direct
+        url = 'https://drive.google.com/uc?id=16aI1MeWcnuubA5M9KUj6KpB83pX8wJ01'  # Lien de téléchargement direct
         download_file_from_google_drive(url, data_path)
     try:
-        df = pd.read_csv(data_path, sep=';')
+        df = pd.read_parquet(data_path)
         return df
     except FileNotFoundError as e:
         st.error(f"Error loading data: {e}")
