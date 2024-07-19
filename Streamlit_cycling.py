@@ -64,7 +64,7 @@ rf_model = load_rf_model()
 # Loading the original dataframe in the cache
 @st.cache_data
 def load_data():
-    data_url = 'https://opendata.paris.fr/explore/dataset/comptage-velo-donnees-compteurs/download/?format=csv&timezone=Europe/Paris&lang=fr&use_labels_for_header=true&csv_separator=;'
+    data_url = 'https://drive.google.com/uc?id=16X-nAdWsnEx6wdN3FganumM98H5y_jP2'
     try:
         df = pd.read_csv(data_url, sep=';')
         return df
