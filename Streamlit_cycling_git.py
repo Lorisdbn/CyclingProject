@@ -34,30 +34,24 @@ st.set_page_config(
 # Loading the random forest model
 @st.cache_resource
 def load_rf_model():
-    # Le chemin de votre répertoire actuel de Streamlit
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    # Ajustez le chemin ici en fonction de la structure de votre projet
     chunks_dir = os.path.join(script_dir, 'model_chunks')
     
-    # Vérifier si le répertoire des morceaux existe
     if not os.path.exists(chunks_dir):
         st.error(f"Chunks directory not found: {chunks_dir}")
         return None
     
-    # Combiner les morceaux pour reconstituer le fichier original
     combined_filename = os.path.join(chunks_dir, 'combined_rf_model.joblib')
     try:
         with open(combined_filename, 'wb') as combined_file:
-            for chunk_id in range(45):  # Modifier le nombre de morceaux si nécessaire
+            for chunk_id in range(45):
                 chunk_filename = os.path.join(chunks_dir, f'rf_model.joblib_chunk_{chunk_id}.pkl')
                 with open(chunk_filename, 'rb') as chunk_file:
                     combined_file.write(chunk_file.read())
         
-        # Charger le modèle depuis le fichier reconstitué
         with open(combined_filename, 'rb') as model_file:
             rf_model = joblib.load(model_file)
         
-        # Supprimer le fichier combiné temporaire
         os.remove(combined_filename)
         
         return rf_model
