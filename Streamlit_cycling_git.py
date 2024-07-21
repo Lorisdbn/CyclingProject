@@ -34,7 +34,6 @@ st.set_page_config(
 )
 
 
-
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -57,9 +56,8 @@ def load_rf_model_chunk(chunk_id):
         logger.error(f"Error loading chunk: {e}")
         return None
 
-# Fonction pour combiner et charger les morceaux paresseusement
-@st.cache_resource
-def load_rf_model():
+# Fonction pour combiner et charger les morceaux au besoin
+def load_rf_model_on_demand():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     chunks_dir = os.path.join(script_dir, 'model_chunks')
     
@@ -67,6 +65,7 @@ def load_rf_model():
         st.error(f"Chunks directory not found: {chunks_dir}")
         return None
     
+    # Initialiser le fichier combiné en mémoire
     combined_file = BytesIO()
     try:
         for chunk_id in range(45):
@@ -74,14 +73,11 @@ def load_rf_model():
             chunk_data = load_rf_model_chunk(chunk_id)
             if chunk_data:
                 combined_file.write(chunk_data)
+                combined_file.seek(0)
+                rf_model = joblib.load(combined_file)
+                combined_file.seek(0, os.SEEK_END)  # Se placer à la fin du fichier combiné
         
         logger.info("Combining chunks completed")
-        
-        combined_file.seek(0)  # Revenir au début du fichier combiné
-        rf_model = joblib.load(combined_file)
-        
-        logger.info("Model loaded successfully")
-        
         return rf_model
     except Exception as e:
         st.error(f"Error loading model: {e}")
@@ -89,7 +85,7 @@ def load_rf_model():
         return None
 
 # Utilisation du modèle dans votre application Streamlit
-rf_model = load_rf_model()
+rf_model = load_rf_model_on_demand()
 if rf_model:
     st.success("Model loaded successfully!")
 else:
