@@ -34,8 +34,10 @@ st.set_page_config(
 # Loading the random forest model
 @st.cache_resource
 def load_rf_model():
+    # Le chemin de votre répertoire actuel de Streamlit
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    chunks_dir = os.path.join(script_dir, 'CyclingProject', 'model_chunks')
+    # Ajustez le chemin ici en fonction de la structure de votre projet
+    chunks_dir = os.path.join(script_dir, 'model_chunks')
     
     # Vérifier si le répertoire des morceaux existe
     if not os.path.exists(chunks_dir):
