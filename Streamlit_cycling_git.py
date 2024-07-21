@@ -31,7 +31,10 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
+
+
 # Loading the random forest model
+joblib.dump(model, 'rf_model_compressed.joblib', compress=3)
 @st.cache_resource
 def load_rf_model():
     script_dir = os.path.dirname(os.path.abspath(__file__))
