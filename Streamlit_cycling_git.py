@@ -41,7 +41,7 @@ def load_rf_model():
         st.error(f"Chunks directory not found: {chunks_dir}")
         return None
     
-    combined_filename = os.path.join(chunks_dir, 'combined_rf_model.joblib')
+    combined_filename = os.path.join(chunks_dir, 'combined_rf_model_compressed.joblib')
     try:
         with open(combined_filename, 'wb') as combined_file:
             for chunk_id in range(45):
@@ -49,8 +49,7 @@ def load_rf_model():
                 with open(chunk_filename, 'rb') as chunk_file:
                     combined_file.write(chunk_file.read())
         
-        with open(combined_filename, 'rb') as model_file:
-            rf_model = joblib.load(model_file)
+        rf_model = joblib.load(combined_filename)
         
         os.remove(combined_filename)
         
