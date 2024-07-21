@@ -23,6 +23,7 @@ import joblib
 import streamlit as st
 import os
 import io
+import logging
 
 st.set_page_config(
     page_title="Cycling traffic in Paris",
@@ -33,8 +34,11 @@ st.set_page_config(
 
 
 
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 # Loading the random forest model
-joblib.dump(model, 'rf_model_compressed.joblib', compress=3)
 @st.cache_resource
 def load_rf_model():
     script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -44,21 +48,28 @@ def load_rf_model():
         st.error(f"Chunks directory not found: {chunks_dir}")
         return None
     
-    combined_filename = os.path.join(chunks_dir, 'combined_rf_model_compressed.joblib')
+    combined_filename = os.path.join(chunks_dir, 'combined_rf_model.joblib')
     try:
         with open(combined_filename, 'wb') as combined_file:
             for chunk_id in range(45):
                 chunk_filename = os.path.join(chunks_dir, f'rf_model.joblib_chunk_{chunk_id}.pkl')
+                logger.info(f"Reading chunk: {chunk_filename}")
                 with open(chunk_filename, 'rb') as chunk_file:
                     combined_file.write(chunk_file.read())
         
-        rf_model = joblib.load(combined_filename)
+        logger.info("Combining chunks completed")
+        
+        with open(combined_filename, 'rb') as model_file:
+            rf_model = joblib.load(model_file)
+        
+        logger.info("Model loaded successfully")
         
         os.remove(combined_filename)
         
         return rf_model
     except Exception as e:
         st.error(f"Error loading model: {e}")
+        logger.error(f"Error loading model: {e}")
         return None
 
 # Utilisation du modèle dans votre application Streamlit
