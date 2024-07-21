@@ -38,8 +38,25 @@ st.set_page_config(
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Loading the random forest model
-@st.cache_resource
+# Loading a single chunk of the model
+def load_rf_model_chunk(chunk_id):
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    chunks_dir = os.path.join(script_dir, 'model_chunks')
+    
+    chunk_filename = os.path.join(chunks_dir, f'rf_model.joblib_chunk_{chunk_id}.pkl')
+    if not os.path.exists(chunk_filename):
+        st.error(f"Chunk file not found: {chunk_filename}")
+        return None
+    
+    try:
+        with open(chunk_filename, 'rb') as chunk_file:
+            return chunk_file.read()
+    except Exception as e:
+        st.error(f"Error loading chunk: {e}")
+        logger.error(f"Error loading chunk: {e}")
+        return None
+
+# Combine and load the model on demand
 def load_rf_model():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     chunks_dir = os.path.join(script_dir, 'model_chunks')
@@ -52,10 +69,10 @@ def load_rf_model():
     try:
         with open(combined_filename, 'wb') as combined_file:
             for chunk_id in range(45):
-                chunk_filename = os.path.join(chunks_dir, f'rf_model.joblib_chunk_{chunk_id}.pkl')
-                logger.info(f"Reading chunk: {chunk_filename}")
-                with open(chunk_filename, 'rb') as chunk_file:
-                    combined_file.write(chunk_file.read())
+                logger.info(f"Reading chunk: {chunk_id}")
+                chunk_data = load_rf_model_chunk(chunk_id)
+                if chunk_data:
+                    combined_file.write(chunk_data)
         
         logger.info("Combining chunks completed")
         
