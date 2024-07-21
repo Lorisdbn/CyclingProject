@@ -24,6 +24,7 @@ import streamlit as st
 import os
 import io
 import logging
+from io import BytesIO
 
 st.set_page_config(
     page_title="Cycling traffic in Paris",
@@ -38,7 +39,7 @@ st.set_page_config(
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Loading a single chunk of the model
+# Fonction pour lire un seul morceau de modèle
 def load_rf_model_chunk(chunk_id):
     script_dir = os.path.dirname(os.path.abspath(__file__))
     chunks_dir = os.path.join(script_dir, 'model_chunks')
@@ -56,7 +57,8 @@ def load_rf_model_chunk(chunk_id):
         logger.error(f"Error loading chunk: {e}")
         return None
 
-# Combine and load the model on demand
+# Fonction pour combiner et charger les morceaux paresseusement
+@st.cache_resource
 def load_rf_model():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     chunks_dir = os.path.join(script_dir, 'model_chunks')
@@ -65,23 +67,20 @@ def load_rf_model():
         st.error(f"Chunks directory not found: {chunks_dir}")
         return None
     
-    combined_filename = os.path.join(chunks_dir, 'combined_rf_model.joblib')
+    combined_file = BytesIO()
     try:
-        with open(combined_filename, 'wb') as combined_file:
-            for chunk_id in range(45):
-                logger.info(f"Reading chunk: {chunk_id}")
-                chunk_data = load_rf_model_chunk(chunk_id)
-                if chunk_data:
-                    combined_file.write(chunk_data)
+        for chunk_id in range(45):
+            logger.info(f"Reading chunk: {chunk_id}")
+            chunk_data = load_rf_model_chunk(chunk_id)
+            if chunk_data:
+                combined_file.write(chunk_data)
         
         logger.info("Combining chunks completed")
         
-        with open(combined_filename, 'rb') as model_file:
-            rf_model = joblib.load(model_file)
+        combined_file.seek(0)  # Revenir au début du fichier combiné
+        rf_model = joblib.load(combined_file)
         
         logger.info("Model loaded successfully")
-        
-        os.remove(combined_filename)
         
         return rf_model
     except Exception as e:
