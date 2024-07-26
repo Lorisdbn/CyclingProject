@@ -6,4 +6,5 @@ The project has been led from May to July, 2024.<br>
 <br>
 Resources :<br>
 Original dataset : https://opendata.paris.fr/explore/dataset/comptage-velo-donnees-compteurs/download/?format=csv&timezone=Europe/Paris&lang=fr&use_labels_for_header=true&csv_separator=;) <br>
+Cleaned / processed dataset used for machine learning : https://drive.google.com/uc?export=download&id=17X3kXO2uhO1VSbpnC1T3GSIgr05mncq5 <br>
 Machine learning model : [https://drive.google.com/uc?id=16LnLIWL26NwK9e1slSzs6FGXwIkjinwr](https://drive.google.com/uc?id=17-TIEds35Al6JQLzebASTEUmrYEVgHl4)
