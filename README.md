@@ -1,10 +1,19 @@
 # Cycling traffic in Paris
-The City of Paris has been deploying permanent bicycle counters for several years to assess the development of cycling.<br>
-The aim of this project is to carry out an analysis of the data collected by these bike counters in order to visualize the timetables and the areas of affluence.<br>
-This will aim to provide tools to the town hall of Paris so that it can judge the improvements to be made to the various cycling areas of the city.<br>
-The project has been led from May to July, 2024.<br>
-<br>
-Resources :<br>
-Original dataset : https://opendata.paris.fr/explore/dataset/comptage-velo-donnees-compteurs/download/?format=csv&timezone=Europe/Paris&lang=fr&use_labels_for_header=true&csv_separator=;) <br>
-Cleaned / processed dataset used for machine learning : https://drive.google.com/uc?export=download&id=17X3kXO2uhO1VSbpnC1T3GSIgr05mncq5 <br>
-Machine learning model : [https://drive.google.com/uc?id=16LnLIWL26NwK9e1slSzs6FGXwIkjinwr](https://drive.google.com/uc?id=17-TIEds35Al6JQLzebASTEUmrYEVgHl4)
+
+An interactive Streamlit dashboard for exploring Paris bicycle-counter data and estimating hourly traffic at 70 counting sites.
+
+## Live application
+
+Deploy `app/streamlit_app.py` on Streamlit Community Cloud.
+
+## Cloud-ready architecture
+
+The original CSV is 1.33 GB and is intentionally not loaded by the hosted app. The repository contains compact, precomputed Parquet tables and a 340 KB machine-learning model instead. This keeps startup fast and memory usage low.
+
+The model is a histogram gradient boosting regressor trained on 2022–2023 data and evaluated on the later 2024 period. Its temporal holdout score is R² 0.67 with a mean absolute error of about 30 bicycles per hour.
+
+## Data source
+
+[Paris Open Data — bicycle counter records](https://opendata.paris.fr/explore/dataset/comptage-velo-donnees-compteurs/)
+
+The original analysis was completed during a data-analysis bootcamp in 2024.

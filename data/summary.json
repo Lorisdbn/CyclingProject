@@ -1,0 +1,24 @@
+{
+  "rows": 965173,
+  "counters": 70,
+  "start_date": "2022-03-27",
+  "end_date": "2024-05-19",
+  "mean_hourly_count": 76.97462734660004,
+  "median_hourly_count": 42.0,
+  "std_hourly_count": 104.85963649565139,
+  "min_hourly_count": 0,
+  "max_hourly_count": 5349,
+  "q1_hourly_count": 13.0,
+  "q3_hourly_count": 96.0,
+  "model_metrics_2024": {
+    "mae": 29.605797459116808,
+    "rmse": 56.23260777977366,
+    "r2": 0.671088055010263,
+    "baseline_mae": 68.23954994619457,
+    "baseline_rmse": 98.46960472434569,
+    "baseline_r2": -0.008573577600774485,
+    "train_rows": 639501,
+    "compact_train_rows": 457232,
+    "test_rows": 325672
+  }
+}
