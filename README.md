@@ -1,19 +1,60 @@
-# Cycling traffic in Paris
+# Paris Cycling Analytics
 
-An interactive Streamlit dashboard for exploring Paris bicycle-counter data and estimating hourly traffic at 70 counting sites.
+An end-to-end data science portfolio project that turns **965,173 hourly bicycle-counter observations** into an interactive analytical dashboard and a lightweight prediction service.
 
-## Live application
+**[Open the live Streamlit application](https://cycling-traffic-paris.streamlit.app/)**
 
-Deploy `app/streamlit_app.py` on Streamlit Community Cloud.
+## Business question
 
-## Cloud-ready architecture
+When and where is bicycle demand highest in Paris, and can hourly traffic be estimated for a selected counter and future time?
 
-The original CSV is 1.33 GB and is intentionally not loaded by the hosted app. The repository contains compact, precomputed Parquet tables and a 340 KB machine-learning model instead. This keeps startup fast and memory usage low.
+The application moves from descriptive analysis to operational prediction:
 
-The model is a histogram gradient boosting regressor trained on 2022–2023 data and evaluated on the later 2024 period. Its temporal holdout score is R² 0.67 with a mean absolute error of about 30 bicycles per hour.
+- Explore the skewed target distribution and robust summary statistics.
+- Compare monthly seasonality and weekday/weekend hourly profiles.
+- Rank high-volume counting sites and inspect spatial patterns.
+- Explain the production data pipeline and feature engineering.
+- Evaluate the model on an unseen future period.
+- Generate an hourly prediction for any of 70 counting sites.
+
+## Results
+
+| Metric | Result |
+| --- | ---: |
+| Temporal test period | 2024 |
+| Test observations | 325,672 |
+| R² | 0.67 |
+| Mean absolute error | 29.6 bicycles/hour |
+| MAE reduction vs historical-mean baseline | 57% |
+| Model artifact size | 335 KB |
+
+The model is a compact histogram gradient boosting regressor trained on 2022–2023 data. A temporal holdout is used instead of a random split so evaluation better reflects a real deployment scenario.
+
+## Production architecture
+
+The original CSV is **1.33 GB**, which is not practical to load for every visitor on a free hosted app. Heavy work is performed offline:
+
+1. Select and validate analytical fields.
+2. Build compact daily, seasonal and site-level Parquet tables.
+3. Engineer cyclical time features for hour, weekday, day and month.
+4. Train and evaluate the model outside Streamlit.
+5. Deploy less than 0.5 MB of analytical tables and model artifacts.
+
+This separation keeps the application responsive while preserving the most useful analytical views.
+
+## Technology
+
+Python · pandas · NumPy · Plotly · scikit-learn · PyArrow · Streamlit · GitHub Actions
 
 ## Data source
 
 [Paris Open Data — bicycle counter records](https://opendata.paris.fr/explore/dataset/comptage-velo-donnees-compteurs/)
 
-The original analysis was completed during a data-analysis bootcamp in 2024.
+Data coverage: 27 March 2022 to 19 May 2024.
+
+## Run locally
+
+```bash
+pip install -r requirements.txt
+streamlit run app/streamlit_app.py
+```
